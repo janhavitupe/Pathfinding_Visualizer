@@ -1,0 +1,44 @@
+.node {
+  width: 25px;
+  height: 25px;
+  border: 1px solid #222;
+  background-color: white;
+  transition: background-color 0.25s ease;
+}
+
+.node-start {
+  background-color: #00b894; /* greenish for start */
+}
+
+.node-end {
+  background-color: #d63031; /* red for end */
+}
+
+.node-wall {
+  background-color: #b5651d; /* light brown */
+}
+
+.node-weight {
+  background-color: #8e24aa; /* dark magenta */
+}
+
+.node-visited {
+  background-color: #74b9ff; /* blue for visited nodes */
+}
+
+.node-path {
+  background-color: #ffeaa7; /* yellowish for final shortest path */
+  animation: pathBlink 0.4s infinite alternate;
+}
+
+@keyframes pathBlink {
+  from {
+    background-color: #fdcb6e;
+  }
+  to {
+    background-color: #ffeaa7;
+  }
+}
+.node:hover {
+  border-color: #0984e3; /* highlight border on hover */
+}
