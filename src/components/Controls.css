@@ -1,17 +1,119 @@
 .controls {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  background: rgba(255,255,255,0.02);
-  padding:10px;
-  border-radius:8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #111827;
+  padding: 14px 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
-.controls .left, .controls .mid, .controls .right { display:flex; align-items:center; gap:8px; }
-button { padding:6px 10px; border-radius:6px; border:0; background:#1f2937; color:#fff; cursor:pointer; }
-button.active { background:#2563eb; }
-button:disabled { opacity:0.5; cursor:not-allowed; }
-select { padding:6px; border-radius:6px; background:#0b1220; color:#fff; border:0; }
-input[type="range"]{ width:120px; }
-label { color: #cbd5e1; font-size:13px; display:flex; align-items:center; gap:6px;}
-label span { font-size:12px; color:#94a3b8; }
+
+/* Uniform button style */
+.controls button {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: #1f2937;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.controls button:hover:not(:disabled) {
+  background: #2d3748;
+  border-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+.controls button.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.controls button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Visualize button stands out */
+.controls button.btn-visualize {
+  background: #16a34a;
+  border-color: #22c55e;
+  color: #fff;
+  font-weight: 600;
+}
+
+.controls button.btn-visualize:hover:not(:disabled) {
+  background: #15803d;
+}
+
+/* Reset button */
+.controls button.btn-reset {
+  background: #7f1d1d;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.controls button.btn-reset:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+/* Divider between groups */
+.controls-divider {
+  width: 1px;
+  height: 28px;
+  background: #374151;
+}
+
+/* Select dropdown */
+.controls select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #1f2937;
+  color: #e2e8f0;
+  border: 2px solid #374151;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.controls select:hover:not(:disabled),
+.controls select:focus {
+  border-color: #4b5563;
+}
+
+/* Labels */
+.controls label {
+  color: #cbd5e1;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Speed slider */
+.controls input[type="range"] {
+  width: 100px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+/* Checkbox */
+.controls input[type="checkbox"] {
+  accent-color: #2563eb;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}

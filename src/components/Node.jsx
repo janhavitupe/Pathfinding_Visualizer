@@ -11,7 +11,13 @@ export default function Node({
 }) {
   const { row, col, isStart, isEnd, isWall, weight, visited, isPath } = node;
 
-  const handleMouseDown = () => onMouseDown(row, col);
+  const handleMouseDown = () => {
+    if (placing === "start" || placing === "end") {
+      updateNode(row, col);
+    } else {
+      onMouseDown(row, col);
+    }
+  };
   const handleMouseEnter = () => onMouseEnter(row, col);
   const handleMouseUp = () => onMouseUp();
 
@@ -21,12 +27,12 @@ export default function Node({
     ? "node-end"
     : isWall
     ? "node-wall"
-    : weight > 1
-    ? "node-weight"
     : isPath
     ? "node-path"
     : visited
     ? "node-visited"
+    : weight > 1
+    ? "node-weight"
     : "";
 
   return (

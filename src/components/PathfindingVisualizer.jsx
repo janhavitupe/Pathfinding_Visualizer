@@ -142,24 +142,49 @@ export default function PathfindingVisualizer() {
     if (running) return;
     setRunning(true);
 
-    clearPath();
+    // Deep clone grid for the algorithm to mutate freely
+    const algoGrid = grid.map((row) =>
+      row.map((n) => ({
+        ...n,
+        visited: false,
+        isPath: false,
+        distance: Infinity,
+        heuristic: 0,
+        previousNode: null,
+      }))
+    );
+    // Fix previousNode references to point within algoGrid
+    for (let r = 0; r < algoGrid.length; r++) {
+      for (let c = 0; c < algoGrid[0].length; c++) {
+        algoGrid[r][c].previousNode = null;
+      }
+    }
 
     const algorithmFn = algorithm === "dijkstra" ? dijkstra : aStar;
-    const { visitedOrder, path } = algorithmFn(grid, start, end, useWeights);
+    const { visitedOrder, path } = algorithmFn(algoGrid, start, end, useWeights);
 
-    // Animate visited nodes
+    // First: reset all visited/path flags in React state cleanly
+    await new Promise((resolve) => {
+      setGrid((g) =>
+        g.map((row) =>
+          row.map((n) => ({ ...n, visited: false, isPath: false, distance: Infinity, previousNode: null }))
+        )
+      );
+      setTimeout(resolve, 0);
+    });
+
+    // Animate visited nodes one by one
     for (let i = 0; i < visitedOrder.length; i++) {
       await new Promise((resolve) => {
         timeoutRef.current = setTimeout(() => {
+          const vn = visitedOrder[i];
           setGrid((g) =>
             g.map((row) =>
-              row.map((n) => {
-                const vn = visitedOrder[i];
-                if (n.row === vn.row && n.col === vn.col && !n.isStart && !n.isEnd) {
-                  return { ...n, visited: true };
-                }
-                return n;
-              })
+              row.map((n) =>
+                n.row === vn.row && n.col === vn.col && !n.isStart && !n.isEnd
+                  ? { ...n, visited: true }
+                  : n
+              )
             )
           );
           resolve();
@@ -167,23 +192,22 @@ export default function PathfindingVisualizer() {
       });
     }
 
-    // Animate shortest path (including end node)
+    // Animate shortest path
     for (let i = 0; i < path.length; i++) {
       await new Promise((resolve) => {
         timeoutRef.current = setTimeout(() => {
+          const pn = path[i];
           setGrid((g) =>
             g.map((row) =>
-              row.map((n) => {
-                const pn = path[i];
-                if (n.row === pn.row && n.col === pn.col) {
-                  return { ...n, isPath: true };
-                }
-                return n;
-              })
+              row.map((n) =>
+                n.row === pn.row && n.col === pn.col
+                  ? { ...n, isPath: true }
+                  : n
+              )
             )
           );
           resolve();
-        }, 30);
+        }, 40);
       });
     }
 
@@ -211,6 +235,7 @@ export default function PathfindingVisualizer() {
         onMouseDown={handleMouseDown}
         onMouseEnter={handleMouseEnter}
         onMouseUp={handleMouseUp}
+        placing={placing}
         updateNode={updateNode}
       />
     </div>

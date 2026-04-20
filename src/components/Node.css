@@ -23,7 +23,14 @@
 }
 
 .node-visited {
-  background-color: #74b9ff; /* blue for visited nodes */
+  background-color: #74b9ff;
+  animation: visitedPop 0.3s ease-out forwards;
+}
+
+@keyframes visitedPop {
+  0%   { transform: scale(0.3); background-color: #a29bfe; border-radius: 50%; }
+  50%  { transform: scale(1.2); background-color: #6c5ce7; border-radius: 25%; }
+  100% { transform: scale(1.0); background-color: #74b9ff; border-radius: 0; }
 }
 
 .node-path {
