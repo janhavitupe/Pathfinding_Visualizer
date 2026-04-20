@@ -2,19 +2,19 @@ export function aStar(grid, start, end, useWeights = true) {
   const rows = grid.length;
   const cols = grid[0].length;
 
-  // Manhattan distance heuristic
-  function heuristic(a, b) {
-    return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
-  }
-
   const visitedOrder = [];
 
-  // Initialize grid nodes
+  // Manhattan distance heuristic
+  function heuristic(node) {
+    return Math.abs(node.row - end.row) + Math.abs(node.col - end.col);
+  }
+
+  // Initialize all nodes
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const node = grid[r][c];
-      node.distance = Infinity; // g-score
-      node.heuristic = heuristic(node, end);
+      node.distance = Infinity;   // g-score: cost from start
+      node.f = Infinity;          // f-score: g + h
       node.previousNode = null;
       node.visited = false;
     }
@@ -24,16 +24,17 @@ export function aStar(grid, start, end, useWeights = true) {
   const endNode = grid[end.row][end.col];
 
   startNode.distance = 0;
+  startNode.f = heuristic(startNode);
 
   const openSet = [startNode];
 
   while (openSet.length > 0) {
-    // Sort by f = g + h
-    openSet.sort((a, b) => (a.distance + a.heuristic) - (b.distance + b.heuristic));
+    // Pick node with lowest f-score
+    openSet.sort((a, b) => a.f - b.f);
     const node = openSet.shift();
 
     if (node.isWall) continue;
-    if (node.visited) continue; // Skip already visited
+    if (node.visited) continue;
     node.visited = true;
 
     visitedOrder.push({ row: node.row, col: node.col });
@@ -45,50 +46,45 @@ export function aStar(grid, start, end, useWeights = true) {
     for (const nb of neighbors) {
       if (nb.isWall || nb.visited) continue;
 
-      const weight = useWeights ? nb.weight || 1 : 1;
+      const weight = useWeights ? (nb.weight || 1) : 1;
       const tentativeG = node.distance + weight;
 
       if (tentativeG < nb.distance) {
         nb.distance = tentativeG;
+        nb.f = tentativeG + heuristic(nb);
         nb.previousNode = node;
 
-        if (!openSet.includes(nb)) {
-          openSet.push(nb);
-        }
+        // Always push — duplicate entries handled by visited check above
+        openSet.push(nb);
       }
     }
   }
 
-  // Reconstruct path
+  return { visitedOrder, path: reconstructPath(endNode) };
+}
+
+function reconstructPath(endNode) {
   const path = [];
   let current = endNode;
 
-  while (current) {
+  while (current !== null) {
     path.unshift({ row: current.row, col: current.col });
     current = current.previousNode;
   }
 
-  // Ensure start and end are in path
-  if (!path.find(p => p.row === start.row && p.col === start.col)) {
-    path.unshift({ row: start.row, col: start.col });
+  if (path.length === 1 && endNode.previousNode === null && endNode.distance === Infinity) {
+    return [];
   }
 
-  if (!path.find(p => p.row === end.row && p.col === end.col)) {
-    path.push({ row: end.row, col: end.col });
-  }
-
-  return { visitedOrder, path };
+  return path;
 }
 
-// Helper: 4-directional neighbors
 function getNeighbors(node, grid, rows, cols) {
   const { row, col } = node;
   const neighbors = [];
-
-  if (row > 0) neighbors.push(grid[row - 1][col]);
+  if (row > 0)        neighbors.push(grid[row - 1][col]);
   if (row < rows - 1) neighbors.push(grid[row + 1][col]);
-  if (col > 0) neighbors.push(grid[row][col - 1]);
+  if (col > 0)        neighbors.push(grid[row][col - 1]);
   if (col < cols - 1) neighbors.push(grid[row][col + 1]);
-
   return neighbors;
 }
